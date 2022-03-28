@@ -70,7 +70,7 @@ def BFS(graph, src, n):
  
         # dequeue front node and print it
         (v, parent) = q.popleft()
- 
+
         # do for every edge (v, u)
         for u in graph.adjList[v]:
             if not discovered[u]:
@@ -92,33 +92,32 @@ def BFS(graph, src, n):
 
 def kruskal(g):
 	# create the list with the final solution
-	A = UnweightedGraph([], g.num_vertex+1)
-	# sort the graph by weight of the edges
+	A = []
+	# create an unweighted copy of the graph, used for BFS cycle detection
+	unweighted_g = UnweightedGraph([], g.num_vertex+1)
+
+	# sort the graph by weight of the edges and iterate through it
 	sorted_g = {k: v for k, v in sorted(g.edges.items(), key=lambda item: item[1])}
-	print(sorted_g)
 	for key in sorted_g:
+		# split the key in order to obtain the node from which we start the BFS cycle detection
 		nodes = key.split()
-		#if not BFS(A.add_edge(key))
-		print('------------------NUOVA ITERAZIONE-------------------')
-		print('Arco considerato: ', key)
-		
-		A.add_edge(key)
-		A.get_unweighted_graph()
-		if BFS(A, 0, g.num_vertex):
-			print('ciclo')
-		else:
-			print('non ciclo')
-		
+		unweighted_g.add_edge(key)
+
+		# check wheter the added edge createsa cycle
+		if not BFS(unweighted_g, int(nodes[0]), g.num_vertex+1):
+			# we have not detected a cycle, hence the edge can be added to the solution
+			A.append(key)
+
 	return A
 
 
 if __name__ == '__main__':
-	f = open('mst_dataset/test.txt', 'r')
+	f = open('mst_dataset/input_random_02_10.txt', 'r')
 
 	line = f.readline().split()
 	g = Graph(int(line[0]), int(line[1]))
 	edges = f.read().splitlines()
 	g.add_edges(edges)
-	#g.get_graph()
-	kruskal(g)
+	
+	print(kruskal(g))
 
