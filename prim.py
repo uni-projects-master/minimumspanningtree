@@ -1,76 +1,22 @@
-
-
-
-'''
-class adjNode:
-    def __init__(self, value):
-        self.node = value
-        self.next = None
-
-    #def get_next(self, i):
-class adjList:
-    def __init__(self, n_ver):
-        self.num_vertex = n_ver
-        self.graph = [None] * self.num_vertex
-
-    # Add edge
-    def add_edge(self, edge_ls):
-        for i in edge_ls:
-            edge = i.split()
-            v = int(edge[0])
-            w = int(edge[1])
-            node = adjNode(w)
-            node.next = self.graph[v]
-            self.graph[v] = node
-
-            node = adjNode(v)
-            node.next = self.graph[w]
-            self.graph[w] = node
-
-    def print_alist(self):
-        for i in range(1, self.num_vertex):
-            #print("Vertex " + str(i) + ":", end="")
-            ls = []
-            temp = self.graph[i]
-            while temp:
-                #print(" -> {}".format(temp.node), end="")
-                ls.append(temp.node)
-                temp = temp.next
-            #print(ls)
-            print(" \n")
-
-
-    def find(self, node):
-        ls = []
-        for i in range(self.num_vertex):
-            temp = self.graph[i]
-            while temp:
-                print("temp:", temp.node)
-                #print("node:", node[0])
-                if temp.node == int(node[0]):
-                    print("**")
-                    ls.append(temp.next)
-                temp = temp.next
-        print(ls)
-'''
+import random
 
 
 class vertex:
-    def __init__(self, n, v, p, adj):
-        self.name = n
-        self.value = v
-        self.pos = p
-        self.adj = adj
+    def __init__(self, name):
+        INF = 99999
+        self.Name = str(name)
+        self.Value = INF
+        self.Parent = None
 
 
 class Graph:
     def __init__(self, n_ver, n_edges):
-        self.num_vertex = n_ver
+        self.vertecies = []
         self.num_edges = n_edges
         self.edges = {}
-        self.vertecies = []
-        for i in range(1, self.num_vertex+1):
-            self.vertecies.append(str(i))
+        for v in range(1, n_ver+1):
+            new_vertex = vertex(name=v)
+            self.vertecies.append(new_vertex)
 
     def add_edges(self, list_edges):
         keys = []
@@ -79,6 +25,8 @@ class Graph:
             edge = i.split()
             keys.append(str(edge[0]) + ' ' + str(edge[1]))
             weights.append(int(edge[2]))
+            keys.append(str(edge[1]) + ' ' + str(edge[0]))
+            weights.append(int(edge[2]))
 
         for k in range(len(keys)):
             self.edges[keys[k]] = weights[k]
@@ -86,128 +34,118 @@ class Graph:
     def get_graph(self):
         print(self.edges)
 
-    def find_adj(self, vertex):
-        ls = []
+    def find_vertex(self, v):
+        for i in self.vertecies:
+            if i.Name == v:
+                return i
+
+    def find_adj(self, v):
+        adj_ls = []
         for i in self.edges:
-            edge_key = i.split()
-            if edge_key[0] == vertex:
-                ls.append(edge_key[1])
-            elif edge_key[1] == vertex:
-                ls.append(edge_key[0])
-        return ls
+            edge_key = i.split(' ')
+            if edge_key[0] == v.Name:
+                new_adj = self.find_vertex(edge_key[1])
+                adj_ls.append(new_adj)
+        return adj_ls
+
 
 class minHeap:
-    def __init__(self, node_list):
-        self.size = len(node_list)
-        rows, cols = len(node_list), 2
-        INF = 999999
-        self.Heap = [[1 for i in range(cols)] for j in range(rows)]
-        self.Pos = []
-        for i in range(0, rows):
-            #print("vertex name is:", node_list[i])
-            self.Heap[i][0] = node_list[i]
-            self.Heap[i][1] = INF
-           # self.Pos[i][0] = node_list[i]
-            self.Pos.append(i)
 
-    def minHeapify(self, index):
-        smallest = index
-        left = 2 * index + 1
-        right = 2 * index + 2
+    # Constructor to initialize a heap
+    def __init__(self):
+        self.Heap = []
+        self.Size = 0
 
-        if left < self.size and self.Heap[left][1] < self.Heap[smallest][1]:
+    def extractHeapify(self, idx):
+        smallest = idx
+        left = 2*idx + 1
+        right = 2*idx + 2
+        if left < self.Size and self.Heap[left].Value < self.Heap[smallest].Value:
             smallest = left
-
-        if right < self.size and self.Heap[right][1] < self.Heap[smallest][1]:
+        if right < self.Size and self.Heap[right].Value < self.Heap[smallest].Value:
             smallest = right
-
-        # The nodes to be swapped in min heap if index is not smallest
-        if smallest != index:
-            # Swap positions
-            #self.Position[self.Heap[smallest]] = index
-            #self.Position[self.Heap[index]] = smallest
-            # Swap nodes
-            temp = self.Heap[smallest]
-            self.Heap[smallest] = self.Heap[index]
-            self.Heap[index] = temp
-
-
-            #print("temp:", temp)
-            #print("smallest:", )
-            # Call function again
-            self.minHeapify(smallest)
+        if smallest != idx:
+            self.Heap[idx], self.Heap[smallest] = self.Heap[smallest], self.Heap[idx]
+            self.extractHeapify(smallest)
 
     def extractMin(self):
-
         if self.isEmpty():
             return
-
-        #print("before swap:")
-
-
         root = self.Heap[0]
-        lastNode = self.Heap[self.size - 1]
-        #print("root:", self.Heap.index(root))
-        #print("lastnode:", self.Heap.index(lastNode))
-        self.Heap[0] = lastNode
-        self.Heap[self.size - 1] = root
-        #print("after swap:")
-        #print("root:", self.Heap.index(root))
-        #print("lastnode:", self.Heap.index(lastNode))
-        # Update position of last node
-
-        # Reduce heap size and heapify root
-        self.size -= 1
-        self.minHeapify(0)
+        self.Heap[0] = self.Heap[self.Size - 1]
+        self.Size -= 1
+        self.extractHeapify(0)
         return root
 
+    def insertHeapify(self, idx):
+        parent = int(((idx - 1) / 2))
+        if self.Heap[idx].Value < self.Heap[parent].Value:
+            self.Heap[idx], self.Heap[parent] = self.Heap[parent], self.Heap[idx]
+            self.insertHeapify(parent)
+
+    def insert(self, v):
+        self.Size += 1
+        self.Heap.append(v)
+        self.insertHeapify(self.Size - 1)
+        return
+
+    def updateKey(self, v):
+        self.Heap.remove(v)
+        print(v.Name, "deleted from list")
+        self.print_Heap()
+        self.Size -= 1
+        self.insert(v)
 
     def isEmpty(self):
-        return True if self.size == 0 else False
+        return True if self.Size == 0 else False
 
-    def print_heap(self):
-        print("heap:", self.Heap)
-        print("pos:", self.Pos)
-        #print(self.size)
-
-    def isInMinHeap(self, vertex):
-        #print("size:", self.size)
-        #print("position:", self.Heap[vertex][0])
-        if self.Heap.index(vertex) < self.size:
+    def isInMinHeap(self, v):
+        if v in self.Heap:
             return True
         return False
 
+    def print_Heap(self):
+        for i in self.Heap:
+            print("Name: ", i.Name, ", Value: ", i.Value)
 
-# implement minHeap (each node has a name and a value) with functions insert and extractMin
-def prim(g):
-    Q = minHeap(g.vertecies)
-    Q.print_heap()
 
+def prim(G):
+    Q = minHeap()
+    A = []
+    start = random.choice(G.vertecies)
+    start.Value = 0
+    for ver in G.vertecies:
+        Q.insert(ver)
     while not Q.isEmpty():
-        # find vertex in adjList
-        # iterate through adjacents of u
         u = Q.extractMin()
-        u_adj = g.find_adj(u[0])
-        #print("u is:", u[0])
-        #print("adj list:", u_adj)
+        A.append(u)
+        u_adj = g.find_adj(u)
         for v in u_adj:
-            if not Q.isInMinHeap(v):
-                print("yes it is")
-                if edge(u,v) < Q.vertex.value:
-                    update vertex value in heap
+            current_edge = v.Name + ' ' + u.Name
+            if Q.isInMinHeap(v) and g.edges[current_edge] < v.Value:
+                v.Value = g.edges[current_edge]
+                v.Parent = u
+                Q.updateKey(v)
+    print("SOLUTION: ", len(A))
+    print(A[0].Name, A[0].Value)
+    for i in range(1, len(A)):
+        #parent = A[i].Parent
+        print(A[i].Name, ",", A[i].Value)
 
 
 
 
 
 if __name__ == '__main__':
-    f = open('mst_dataset/input_random_01_10.txt', 'r')
+    f = open('mst_dataset/input_random_03_10.txt', 'r')
 
     line = f.readline().split()
     edge_list = f.read().splitlines()
     g = Graph(int(line[0]), int(line[1]))
     g.add_edges(edge_list)
+    #random start point
     prim(g)
+
 
     #adjacency_list = adjList(int(line[0]) + 1, edge_list)
     #print(line[0])
