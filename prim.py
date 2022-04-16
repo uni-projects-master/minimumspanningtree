@@ -1,4 +1,5 @@
 import random
+import time
 
 
 class vertex:
@@ -73,6 +74,7 @@ class minHeap:
             return
         root = self.Heap[0]
         self.Heap[0] = self.Heap[self.Size - 1]
+        self.Heap.pop()
         self.Size -= 1
         self.extractHeapify(0)
         return root
@@ -91,8 +93,6 @@ class minHeap:
 
     def updateKey(self, v):
         self.Heap.remove(v)
-        print(v.Name, "deleted from list")
-        self.print_Heap()
         self.Size -= 1
         self.insert(v)
 
@@ -116,6 +116,7 @@ def prim(G):
     start.Value = 0
     for ver in G.vertecies:
         Q.insert(ver)
+
     while not Q.isEmpty():
         u = Q.extractMin()
         A.append(u)
@@ -128,32 +129,23 @@ def prim(G):
                 Q.updateKey(v)
     print("SOLUTION: ", len(A))
     print(A[0].Name, A[0].Value)
-    for i in range(1, len(A)):
-        #parent = A[i].Parent
-        print(A[i].Name, ",", A[i].Value)
-
-
-
+    '''for i in range(1, len(A)):
+        parent = A[i].Parent
+        print(A[i].Name, ",", A[i].Value, ",",  parent.Name)'''
 
 
 if __name__ == '__main__':
-    f = open('mst_dataset/input_random_03_10.txt', 'r')
+
+    f = open('mst_dataset/input_random_45_8000.txt', 'r')
 
     line = f.readline().split()
     edge_list = f.read().splitlines()
     g = Graph(int(line[0]), int(line[1]))
     g.add_edges(edge_list)
-    #random start point
+
+    print("prim calculating MST ...")
+    start = time.time()
     prim(g)
-
-
-    #adjacency_list = adjList(int(line[0]) + 1, edge_list)
-    #print(line[0])
-    #adj_list = adjList(int(line[0]))
-    #adj_list.add_edge(edge_list)
-    #print("edge list: ", edge_list)
-    #adj_list.print_alist()
-    #adjacency_list.print_alist()
-    # g.get_graph()
-    #adj_list.print_alist()
+    end = time.time()
+    print("running time:", end - start)
 
