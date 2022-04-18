@@ -25,20 +25,49 @@ class UnweightedGraph:
         print(self.adjList)
 
 
+class DisjointedSet:
+
+    def __init__(self, num_vertex):
+        self.num_vertex = num_vertex
+        # create a list to contain all the verteces in the union find
+        self.vertices = [*range(1, self.num_vertex, 1)]
+        self.parent = {}
+        # at the initial state each node is the father of itself
+        for v in self.vertices:
+            self.parent[v] = v
+
+    def find(self, item):
+        # recursevely search the parent of the parent
+        if self.parent[item] == item:
+            return item
+        else:
+            return self.find(self.parent[item])
+
+    def union(self, set1, set2):
+        # update the data structure
+        root1 = self.find(set1)
+        root2 = self.find(set2)
+        self.parent[root1] = root2
+
+    def get_disjointed_set(self):
+        print('Vertices: ', self.vertices)
+        print('Parents: ', self.parent)
+
+
 class Graph:
     def __init__(self, n_ver, n_edges):
         self.num_vertex = n_ver
         self.num_edges = n_edges
         self.vertex_list = []
-        for i in range(self.num_vertex):
-            self.vertex_list.append(str(i))
+        self.edges = {}
+        for k in range(self.num_vertex):
+            self.vertex_list.append(str(k))
 
     def add_edges(self, list_edges):
-        self.edges = {}
         keys = []
         weights = []
-        for i in list_edges:
-            edge = i.split()
+        for e in list_edges:
+            edge = e.split()
             keys.append(str(edge[0]) + ' ' + str(edge[1]))
             weights.append(int(edge[2]))
 
@@ -78,9 +107,10 @@ def BFS_cycle_detection(graph, src, n):
     return False
 
 
-def kruskal(g):
+def naive_kruskal(g):
     # create the list with the final solution
     A = []
+    A_weights = 0
     # create an unweighted copy of the graph, used for BFS cycle detection
     unweighted_g = UnweightedGraph([], g.num_vertex + 1)
 
@@ -95,17 +125,38 @@ def kruskal(g):
         if not BFS_cycle_detection(unweighted_g, int(nodes[0]), g.num_vertex + 1):
             # we have not detected a cycle, hence the edge can be added to the solution
             A.append(key)
+            A_weights += sorted_g[key]
 
-    return A
+    return A_weights
+
+
+def union_find_kruskal(g):
+    # create the list that will contain the solution
+    A = []
+    A_weights = 0
+    # create the disjointed set to handle the cycle detection
+    U = DisjointedSet(g.num_vertex+1)
+    # sort the graph by the weight of the nodes and iterate through it
+    sorted_g = {k: v for k, v in sorted(g.edges.items(), key=lambda item: item[1])}
+    for key in sorted_g:
+        # separate the nodes in the key
+        nodes = key.split()
+        # check if the nodes are already in the same set
+        if U.find(int(nodes[0])) != U.find(int(nodes[1])):
+            # they are not in the same set, add the edge to the solution and union of the sets of v and w
+            A.append(key)
+            A_weights += sorted_g[key]
+            U.union(int(nodes[0]), int(nodes[1]))
+    return A_weights
 
 
 def measure_run_times(g, num_calls, num_instances):
     sum_times = 0.0
-    for i in range(num_instances):
+    for k in range(num_instances):
         gc.disable()
         start_time = perf_counter_ns()
-        for i in range(num_calls):
-            kruskal(g)
+        for j in range(num_calls):
+            naive_kruskal(g)
         end_time = perf_counter_ns()
         gc.enable()
         sum_times += (end_time - start_time) / num_calls
@@ -126,7 +177,7 @@ if __name__ == '__main__':
     for file in sorted(os.listdir(directory)):
         filename = os.fsdecode(file)
 
-        if (filename.endswith('.txt')):
+        if filename.endswith('.txt'):
             f = open(dir_name + '/' + filename)
             line = f.readline().split()
             g = Graph(int(line[0]), int(line[1]))

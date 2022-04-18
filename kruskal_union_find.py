@@ -51,12 +51,12 @@ class DisjointedSet:
 		print('Parents: ', self.parent)
 
 
-def kruskal(g):
+def union_find_kruskal(g):
 	# create the list that will contain the solution
 	A = []
+	A_weights = 0
 	# create the disjointed set to handle the cycle detection
 	U = DisjointedSet(g.num_vertex+1)
-
 	# sort the graph by the weight of the nodes and iterate through it
 	sorted_g = {k: v for k, v in sorted(g.edges.items(), key=lambda item: item[1])}
 	for key in sorted_g:
@@ -66,17 +66,17 @@ def kruskal(g):
 		if U.find(int(nodes[0])) != U.find(int(nodes[1])):
 			# they are not in the same set, add the edge to the solution and union of the sets of v and w
 			A.append(key)
+			A_weights += sorted_g[key]
 			U.union(int(nodes[0]), int(nodes[1]))
-	return A
+	return A_weights
 
 
 if __name__ == '__main__':
-	f = open('mst_dataset/input_random_02_10.txt', 'r')
+	f = open('mst_dataset/input_random_13_80.txt', 'r')
 
 	line = f.readline().split()
 	g = Graph(int(line[0]), int(line[1]))
 	edges = f.read().splitlines()
 	g.add_edges(edges)
-	#g.get_graph()
 
-	print(kruskal(g))
+	union_find_kruskal(g)
