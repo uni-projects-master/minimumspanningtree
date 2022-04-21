@@ -1,3 +1,10 @@
+import random
+import os
+import gc
+from time import perf_counter_ns
+import matplotlib.pyplot as plt
+
+
 class Graph:
 	def __init__(self, n_ver, n_edges):
 		self.num_vertex = n_ver
@@ -34,11 +41,16 @@ class DisjointedSet:
 			self.parent[v] = v
 
 	def find(self, item):
-		# recursevely search the parent of the parent
-		if self.parent[item] == item:
-			return item
-		else:
-			return self.find(self.parent[item])
+		  # recursevely search the parent of the parent
+		  # RECURSIVE VERSION
+		  # if self.parent[item] == item:
+		   # return item
+		  # else:
+		   # return self.find(self.parent[item])
+		  # ITERATIVE VERSION
+  		while self.parent[item] != item:
+   			item = self.parent[item]
+  		return item
 
 	def union(self, set1, set2):
 		# update the data structure 
@@ -51,12 +63,12 @@ class DisjointedSet:
 		print('Parents: ', self.parent)
 
 
-def union_find_kruskal(g):
+def kruskal(g):
 	# create the list that will contain the solution
 	A = []
-	A_weights = 0
 	# create the disjointed set to handle the cycle detection
 	U = DisjointedSet(g.num_vertex+1)
+
 	# sort the graph by the weight of the nodes and iterate through it
 	sorted_g = {k: v for k, v in sorted(g.edges.items(), key=lambda item: item[1])}
 	for key in sorted_g:
@@ -66,17 +78,56 @@ def union_find_kruskal(g):
 		if U.find(int(nodes[0])) != U.find(int(nodes[1])):
 			# they are not in the same set, add the edge to the solution and union of the sets of v and w
 			A.append(key)
-			A_weights += sorted_g[key]
 			U.union(int(nodes[0]), int(nodes[1]))
-	return A_weights
+	return A
+
+
+def measure_run_times(g, num_calls, num_instances):
+	sum_times = 0.0
+	print('calcolo i tempi del file')
+	for i in range(num_instances):
+		gc.disable()
+		start_time = perf_counter_ns()
+		for i in range(num_calls):
+			kruskal(g)
+		end_time = perf_counter_ns()
+		gc.enable()
+		sum_times += (end_time - start_time)/num_calls
+	avg_time = int(round(sum_times/num_instances))
+	# return average time in nanoseconds
+	return avg_time
 
 
 if __name__ == '__main__':
-	f = open('mst_dataset/input_random_13_80.txt', 'r')
 
-	line = f.readline().split()
-	g = Graph(int(line[0]), int(line[1]))
-	edges = f.read().splitlines()
-	g.add_edges(edges)
+	dir_name = 'mst_dataset'
+	num_calls = 100
+	num_instances = 5
+	graph_sizes = []
+	run_times = []
 
-	union_find_kruskal(g)
+	directory = os.fsencode(dir_name)
+	for file in sorted(os.listdir(directory)):
+		filename = os.fsdecode(file)
+
+		if(filename.endswith('.txt')):
+			print('-----------------------file che stiamo guardando '+filename+'------------------------------')
+			f = open(dir_name + '/' + filename)
+			line = f.readline().split()
+			g = Graph(int(line[0]), int(line[1]))
+			edges = f.read().splitlines()
+			g.add_edges(edges)
+			f.close()
+			graph_sizes.append(g.num_vertex)
+			run_times.append(measure_run_times(g, num_calls, num_instances))
+
+	with open('results/kruskal_union_find_results.txt', 'w+') as f:
+		f.write("Sizes\tTimes")
+		for i in range(len(graph_sizes)):
+			f.write("%s\t%s\n" % (graph_sizes[i], run_times[i]))
+
+	plt.plot(graph_sizes, run_times)
+	plt.legend(['Measured times'])
+	plt.xlabel('Number of vertices')
+	plt.ylabel('Run times (ns)')
+	plt.show()
