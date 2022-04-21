@@ -83,7 +83,7 @@ def isCyclicUtil(gSupport, v, parent):
     return False
 
 
-def kruskal(g):
+def naive_kruskal(g):
     # create the list with the final solution
     A = []
     
@@ -98,14 +98,19 @@ def kruskal(g):
 
         support_graph.visited = [False] * (support_graph.num_vertex+1)
         # check wheter the added edge createsa cycle
-        if not isCyclicUtil(support_graph,int(single_edge[0]), -1):
+        if not isCyclicUtil(support_graph, int(single_edge[0]), -1):
             # we have not detected a cycle, hence the edge can be added to the solution
             A.append(edge)
         else:
             support_graph.remove_adj(edge)
             support_graph.removekey(edge)
 
-    return A
+    # Measuring Tree Weight
+    A_weight = 0
+    for e in A:
+        A_weight += g.edges[e]
+
+    return A_weight
 
 
 def measure_run_times(g, num_calls, num_instances):

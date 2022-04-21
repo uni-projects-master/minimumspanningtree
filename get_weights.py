@@ -1,4 +1,4 @@
-from kruskal import union_find_kruskal
+from kruskal_union_find import union_find_kruskal
 from kruskal import naive_kruskal
 from kruskal import Graph as KruskalGraph
 from prim import prim

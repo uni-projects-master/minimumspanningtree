@@ -63,7 +63,7 @@ class DisjointedSet:
 		print('Parents: ', self.parent)
 
 
-def kruskal(g):
+def union_find_kruskal(g):
 	# create the list that will contain the solution
 	A = []
 	# create the disjointed set to handle the cycle detection
@@ -79,7 +79,12 @@ def kruskal(g):
 			# they are not in the same set, add the edge to the solution and union of the sets of v and w
 			A.append(key)
 			U.union(int(nodes[0]), int(nodes[1]))
-	return A
+
+	#Measuring Tree Weight
+	A_weight = 0
+	for e in A:
+		A_weight += g.edges[e]
+	return A_weight
 
 
 def measure_run_times(g, num_calls, num_instances):
