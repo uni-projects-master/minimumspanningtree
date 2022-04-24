@@ -1,4 +1,3 @@
-
 import os
 import gc
 from time import perf_counter_ns
@@ -8,15 +7,6 @@ from prim import prim
 from prim import Graph
 from multiprocessing import Process
 
-
-def runInParallel(*fns):
-    proc = []
-    for fn in fns:
-        p = Process(target=fn)
-        p.start()
-        proc.append(p)
-    for p in proc:
-        p.join()
 
 
 def measure_run_times(g, num_calls, num_instances, parallel=False):
@@ -45,7 +35,7 @@ def measure_run_times(g, num_calls, num_instances, parallel=False):
 if __name__ == '__main__':
 
     dir_name = 'mst_dataset'
-    num_calls = 100
+    num_calls = 1
     num_instances = 1
     graph_sizes = []
     run_times = []
@@ -66,8 +56,7 @@ if __name__ == '__main__':
             g.add_edges(edges)
             f.close()
             g_size = g.num_vertex
-            if g_size >= 1000:
-                num_calls = 10
+
             runtime = measure_run_times(g, num_calls, num_instances, par)
             graph_sizes.append(g_size)
             run_times.append(runtime)
