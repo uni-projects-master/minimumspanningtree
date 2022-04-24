@@ -110,7 +110,7 @@ def naive_kruskal(g):
     for e in A:
         A_weight += g.edges[e]
 
-    return A_weight
+    return A
 
 
 def measure_run_times(g, num_calls, num_instances):
@@ -119,7 +119,7 @@ def measure_run_times(g, num_calls, num_instances):
         gc.disable()
         start_time = perf_counter_ns()
         for i in range(num_calls):
-            print(kruskal(g))
+            print(naive_kruskal(g))
         end_time = perf_counter_ns()
         gc.enable()
         sum_times += (end_time - start_time)/num_calls

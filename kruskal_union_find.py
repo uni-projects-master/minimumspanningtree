@@ -38,25 +38,27 @@ class DisjointedSet:
 		self.parent = {}
 		# at the initial state each node is the father of itself
 		for v in self.vertices:
-			self.parent[v] = v
+			self.parent[v] = [v]
 
 	def find(self, item):
-		  # recursevely search the parent of the parent
-		  # RECURSIVE VERSION
-		  # if self.parent[item] == item:
-		   # return item
-		  # else:
-		   # return self.find(self.parent[item])
-		  # ITERATIVE VERSION
-  		while self.parent[item] != item:
-   			item = self.parent[item]
-  		return item
+		for key in self.parent:
+			if item in self.parent[key]:
+				return key
 
 	def union(self, set1, set2):
 		# update the data structure 
 		root1 = self.find(set1)
 		root2 = self.find(set2)
-		self.parent[root1] = root2
+
+		if root1 == root2:
+			return
+
+		if len(self.parent[root1]) < len(self.parent[root2]):
+			self.parent[root2].extend(self.parent[root1])
+			del self.parent[root1]
+		else:
+			self.parent[root1].extend(self.parent[root2])
+			del self.parent[root2]
 
 	def get_disjointed_set(self):
 		print('Vertices: ', self.vertices)
@@ -94,7 +96,7 @@ def measure_run_times(g, num_calls, num_instances):
 		gc.disable()
 		start_time = perf_counter_ns()
 		for i in range(num_calls):
-			kruskal(g)
+			union_find_kruskal(g)
 		end_time = perf_counter_ns()
 		gc.enable()
 		sum_times += (end_time - start_time)/num_calls
@@ -106,8 +108,8 @@ def measure_run_times(g, num_calls, num_instances):
 if __name__ == '__main__':
 
 	dir_name = 'mst_dataset'
-	num_calls = 100
-	num_instances = 5
+	num_calls = 1
+	num_instances = 1
 	graph_sizes = []
 	run_times = []
 
