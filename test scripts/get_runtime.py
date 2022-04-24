@@ -45,7 +45,7 @@ if __name__ == '__main__':
             graph_sizes.append(g.num_vertex)
             run_times.append(measure_run_times(g, num_calls, num_instances))
 
-    with open('results/prim_results.txt', 'w+') as f:
+    with open('../results/prim_results.txt', 'w+') as f:
         f.write("Sizes\tTimes")
         for i in range(len(graph_sizes)):
             f.write("%s\t%s\n" % (graph_sizes[i], run_times[i]))

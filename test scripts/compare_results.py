@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import math
 if __name__ == '__main__':
     # READ RESULTS FROM .txt FILE
-    f = open('results/kruskal_naive_results.txt')
+    f = open('../results/kruskal_naive_results.txt')
     f.readline()
     sizes = []
     naive_kruskal_time = []
@@ -13,7 +13,7 @@ if __name__ == '__main__':
         naive_kruskal_time.append(int(result[1]))
     f.close()
 
-    f = open('results/kruskal_union_find_results.txt')
+    f = open('../results/kruskal_union_find_results.txt')
     f.readline()
     union_find_kruskal_time = []
     for line in f:

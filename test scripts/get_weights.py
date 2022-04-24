@@ -15,9 +15,9 @@ if __name__ == '__main__':
     run_times = []
     row = 0
 
-    directory = os.fsencode(dir_name)
+    directory = os.fsencode('../' + dir_name)
     # OPEN EXCEL FILE TO REPORT THE TREE WEIGHT FOR EACH PROBLEM
-    workbook = xlsxwriter.Workbook('results/mst_weights.xlsx')
+    workbook = xlsxwriter.Workbook('../results/mst_weights.xlsx')
     worksheet = workbook.add_worksheet()
 
     for file in sorted(os.listdir(directory)):
@@ -45,9 +45,6 @@ if __name__ == '__main__':
             worksheet.write('B' + str(row), naive_kruskal_weights)
             worksheet.write('C' + str(row), union_find_kruskal_weights)
             worksheet.write('D' + str(row), prim_weights)
-            # TO TEST ONLY FIRST 30 EXAMPLES
-            if row == 30:
-                break
 
     workbook.close()
 
