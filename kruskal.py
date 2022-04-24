@@ -9,44 +9,35 @@ class Graph:
     def __init__(self, n_ver, n_edges):
         self.num_vertex = n_ver
         self.num_edges = n_edges
-        #self.vertecies = []
         self.vertex_list = []
         self.edges = {}
-        self.visited = [False] * (self.num_vertex)
+        self.visited = [False] * self.num_vertex
         self.adjList = [[] for _ in range(self.num_vertex+1)]
 
         for i in range(1, self.num_vertex+1):
             self.vertex_list.append(str(i))
 
-
     def add_edges(self, list_edges, single_mode=False):
         if single_mode:
             self.edges[list_edges] = 0
-
         else:
-        
             keys = []
             weights = []
             for i in list_edges:
-
                 edge = i.split()
                 if edge[0] != edge[1]:
                     keys.append(str(edge[0]) + ' ' + str(edge[1]))
                     weights.append(int(edge[2]))
-
             for k in range(len(keys)):
                 self.edges[keys[k]] = weights[k]
-
 
     def create_adj_list(self, list_edges):
         nodes = list_edges.split()
         self.adjList[int(nodes[0])].append(int(nodes[1]))
         self.adjList[int(nodes[1])].append(int(nodes[0]))
 
-
     def get_graph(self):
         print(self.edges)
-
 
     def find_adj(self, v):
         adj_ls = []
@@ -58,11 +49,9 @@ class Graph:
                 adj_ls.append(int(edge_key[0]))
         return adj_ls
 
-
     def removekey(self, key):
         del self.edges[key]
         return
-
 
     def remove_adj(self, edge):
         nodes = edge.split()
@@ -74,8 +63,8 @@ def isCyclicUtil(gSupport, v, parent):
     gSupport.visited[v] = True
     adj_ls = gSupport.adjList[v]
     for i in adj_ls:
-        if gSupport.visited[i] == False:
-            if(isCyclicUtil(gSupport, i, v)):
+        if not gSupport.visited[i]:
+            if isCyclicUtil(gSupport, i, v):
                 return True
         elif parent != i:
             return True
@@ -86,7 +75,6 @@ def isCyclicUtil(gSupport, v, parent):
 def naive_kruskal(g):
     # create the list with the final solution
     A = []
-    
     # sort the graph by weight of the edges and iterate through it
     sorted_g = {k: v for k, v in sorted(g.edges.items(), key=lambda item: item[1])}
     support_graph = Graph(g.num_vertex, g.num_edges)
@@ -95,7 +83,6 @@ def naive_kruskal(g):
         support_graph.add_edges(edge, single_mode=True)
         support_graph.create_adj_list(edge)
         single_edge = edge.split()
-
         support_graph.visited = [False] * (support_graph.num_vertex+1)
         # check wheter the added edge createsa cycle
         if not isCyclicUtil(support_graph, int(single_edge[0]), -1):
@@ -118,8 +105,8 @@ def measure_run_times(g, num_calls, num_instances):
     for i in range(num_instances):
         gc.disable()
         start_time = perf_counter_ns()
-        for i in range(num_calls):
-            print(kruskal(g))
+        for j in range(num_calls):
+            naive_kruskal(g)
         end_time = perf_counter_ns()
         gc.enable()
         sum_times += (end_time - start_time)/num_calls
@@ -131,7 +118,7 @@ def measure_run_times(g, num_calls, num_instances):
 if __name__ == '__main__':
 
     dir_name = 'mst_dataset'
-    num_calls = 1
+    num_calls = 1000
     num_instances = 1
     graph_sizes = []
     run_times = []
@@ -142,6 +129,7 @@ if __name__ == '__main__':
 
         if(filename.endswith('.txt')):
             f = open(dir_name + '/' + filename)
+            print("doing the ", filename)
             line = f.readline().split()
             g = Graph(int(line[0]), int(line[1]))
             edges = f.read().splitlines()

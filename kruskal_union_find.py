@@ -94,7 +94,7 @@ def measure_run_times(g, num_calls, num_instances):
 		gc.disable()
 		start_time = perf_counter_ns()
 		for i in range(num_calls):
-			kruskal(g)
+			union_find_kruskal(g)
 		end_time = perf_counter_ns()
 		gc.enable()
 		sum_times += (end_time - start_time)/num_calls
@@ -106,7 +106,7 @@ def measure_run_times(g, num_calls, num_instances):
 if __name__ == '__main__':
 
 	dir_name = 'mst_dataset'
-	num_calls = 100
+	num_calls = 1000
 	num_instances = 5
 	graph_sizes = []
 	run_times = []
@@ -114,8 +114,7 @@ if __name__ == '__main__':
 	directory = os.fsencode(dir_name)
 	for file in sorted(os.listdir(directory)):
 		filename = os.fsdecode(file)
-
-		if(filename.endswith('.txt')):
+		if filename.endswith('.txt'):
 			print('-----------------------file che stiamo guardando '+filename+'------------------------------')
 			f = open(dir_name + '/' + filename)
 			line = f.readline().split()
@@ -127,7 +126,7 @@ if __name__ == '__main__':
 			run_times.append(measure_run_times(g, num_calls, num_instances))
 
 	with open('results/kruskal_union_find_results.txt', 'w+') as f:
-		f.write("Sizes\tTimes")
+		f.write("Sizes\tTimes\n")
 		for i in range(len(graph_sizes)):
 			f.write("%s\t%s\n" % (graph_sizes[i], run_times[i]))
 

@@ -13,18 +13,23 @@ if __name__ == '__main__':
     num_instances = 4
     graph_sizes = []
     run_times = []
-    row = 0
+    row = 1
 
     directory = os.fsencode(dir_name)
     # OPEN EXCEL FILE TO REPORT THE TREE WEIGHT FOR EACH PROBLEM
     workbook = xlsxwriter.Workbook('results/mst_weights.xlsx')
     worksheet = workbook.add_worksheet()
+    worksheet.write('A' + str(row), 'INPUT NAME')
+    worksheet.write('B' + str(row), 'NAIVE KRUSKAL')
+    worksheet.write('C' + str(row), 'UNION FIND KRUSKAL')
+    worksheet.write('D' + str(row), 'PRIM')
 
     for file in sorted(os.listdir(directory)):
         filename = os.fsdecode(file)
         if filename.endswith('.txt'):
             # WRTIE INPUT NAME IN EXCEL
             row += 1
+            print("doing the ", row, "th problem...")
             worksheet.write('A' + str(row), filename)
             # READ GRAPH INFORMATION
             f = open(dir_name + '/' + filename)
@@ -47,7 +52,7 @@ if __name__ == '__main__':
             worksheet.write('D' + str(row), prim_weights)
             # TO TEST ONLY FIRST 30 EXAMPLES
             if row == 30:
-                break
+               break
 
     workbook.close()
 
