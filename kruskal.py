@@ -9,10 +9,11 @@ class Graph:
     def __init__(self, n_ver, n_edges):
         self.num_vertex = n_ver
         self.num_edges = n_edges
-        #self.vertecies = []
         self.vertex_list = []
+        # rapresentation of the graph as a dictionary
         self.edges = {}
         self.visited = [False] * (self.num_vertex)
+        # rapresentation of the graph as an adjacency list
         self.adjList = [[] for _ in range(self.num_vertex+1)]
 
         for i in range(1, self.num_vertex+1):
@@ -20,11 +21,10 @@ class Graph:
 
 
     def add_edges(self, list_edges, single_mode=False):
+        # enabled when the support graph gets created
         if single_mode:
             self.edges[list_edges] = 0
-
         else:
-        
             keys = []
             weights = []
             for i in list_edges:
@@ -50,6 +50,7 @@ class Graph:
 
     def find_adj(self, v):
         adj_ls = []
+        # find the adjacency list for a given vertex
         for i in self.edges:
             edge_key = i.split(' ')
             if int(edge_key[0]) == v:
@@ -71,9 +72,12 @@ class Graph:
 
 
 def isCyclicUtil(gSupport, v, parent):
+    # the starting vertex gets marked as visited
     gSupport.visited[v] = True
+    # find the adjacency list for that vertex to get its neighbours
     adj_ls = gSupport.adjList[v]
     for i in adj_ls:
+        # if we find a back edge return that a cycle has been founded
         if gSupport.visited[i] == False:
             if(isCyclicUtil(gSupport, i, v)):
                 return True
@@ -86,22 +90,23 @@ def isCyclicUtil(gSupport, v, parent):
 def naive_kruskal(g):
     # create the list with the final solution
     A = []
-    
     # sort the graph by weight of the edges and iterate through it
     sorted_g = {k: v for k, v in sorted(g.edges.items(), key=lambda item: item[1])}
     support_graph = Graph(g.num_vertex, g.num_edges)
 
     for edge in sorted_g:
+        # create the support graph for the execution of kruskal
         support_graph.add_edges(edge, single_mode=True)
         support_graph.create_adj_list(edge)
         single_edge = edge.split()
 
         support_graph.visited = [False] * (support_graph.num_vertex+1)
-        # check wheter the added edge createsa cycle
+        # check wheter the added edge creates cycle
         if not isCyclicUtil(support_graph, int(single_edge[0]), -1):
             # we have not detected a cycle, hence the edge can be added to the solution
             A.append(edge)
         else:
+            # if we found a cycle we need to remove the edge from the support graph to keep it correct
             support_graph.remove_adj(edge)
             support_graph.removekey(edge)
 
@@ -129,7 +134,7 @@ def measure_run_times(g, num_calls, num_instances):
 
 
 if __name__ == '__main__':
-
+    
     dir_name = 'mst_dataset'
     num_calls = 1
     num_instances = 1

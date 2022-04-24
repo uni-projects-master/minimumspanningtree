@@ -15,6 +15,7 @@ class Graph:
 			self.vertex_list.append(str(i))
 
 	def add_edges(self, list_edges):
+		# rapresent the graph as a dictionary
 		self.edges = {}
 		keys = []
 		weights = []
@@ -41,6 +42,7 @@ class DisjointedSet:
 			self.parent[v] = [v]
 
 	def find(self, item):
+		# iteratevely check who is the father of the node until one is the father of itself
 		for key in self.parent:
 			if item in self.parent[key]:
 				return key
@@ -50,9 +52,11 @@ class DisjointedSet:
 		root1 = self.find(set1)
 		root2 = self.find(set2)
 
+		# if the nodes are already in the same set we do nothing
 		if root1 == root2:
 			return
 
+		# if the second set is bigger we append to it the first one, then delete it to keep the data structure updated
 		if len(self.parent[root1]) < len(self.parent[root2]):
 			self.parent[root2].extend(self.parent[root1])
 			del self.parent[root1]
