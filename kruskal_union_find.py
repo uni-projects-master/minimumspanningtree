@@ -112,8 +112,8 @@ def measure_run_times(g, num_calls, num_instances):
 if __name__ == '__main__':
 
 	dir_name = 'mst_dataset'
-	num_calls = 1
-	num_instances = 1
+	num_calls = 100
+	num_instances = 5
 	graph_sizes = []
 	run_times = []
 
