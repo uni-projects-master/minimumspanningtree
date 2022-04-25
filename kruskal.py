@@ -115,7 +115,7 @@ def naive_kruskal(g):
     for e in A:
         A_weight += g.edges[e]
 
-    return A
+    return A_weight
 
 
 def measure_run_times(g, num_calls, num_instances):
@@ -124,7 +124,7 @@ def measure_run_times(g, num_calls, num_instances):
         gc.disable()
         start_time = perf_counter_ns()
         for i in range(num_calls):
-            print(naive_kruskal(g))
+            naive_kruskal(g)
         end_time = perf_counter_ns()
         gc.enable()
         sum_times += (end_time - start_time)/num_calls
@@ -146,6 +146,7 @@ if __name__ == '__main__':
         filename = os.fsdecode(file)
 
         if(filename.endswith('.txt')):
+            print('processing ', filename)
             f = open(dir_name + '/' + filename)
             line = f.readline().split()
             g = Graph(int(line[0]), int(line[1]))

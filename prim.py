@@ -2,7 +2,7 @@ import random
 
 # VERTEX STRUCTURE FOR PRIM'S ALGORITHM
 class vertex:
-    def __init__(self, name):
+    def init(self, name):
         INF = 999999
         # VERTEX NAME
         self.Name = str(name)
@@ -13,7 +13,7 @@ class vertex:
 
 
 class Graph:
-    def __init__(self, n_ver, n_edges):
+    def init(self, n_ver, n_edges):
         self.vertices = []
         self.num_edges = n_edges
         self.num_vertex = n_ver
@@ -48,6 +48,7 @@ class Graph:
                 return i
 
     def find_adj(self, v):
+        # find adjacents of a given vertex
         adj_ls = []
         for i in self.edges:
             edge_key = i.split(' ')
@@ -60,45 +61,55 @@ class Graph:
 class minHeap:
 
     # Constructor to initialize a heap
-    def __init__(self):
+    def init(self):
         self.Heap = []
         self.Size = 0
 
     def extractHeapify(self, idx):
+        # Update Heap to keep data min atg root
         smallest = idx
         left = 2*idx + 1
         right = 2*idx + 2
+        # if the child is smaller than parent, change indexes
         if left < self.Size and self.Heap[left].Value < self.Heap[smallest].Value:
             smallest = left
         if right < self.Size and self.Heap[right].Value < self.Heap[smallest].Value:
             smallest = right
+        # if the smallest index has chnaged swap nodes and heapify again
         if smallest != idx:
             self.Heap[idx], self.Heap[smallest] = self.Heap[smallest], self.Heap[idx]
             self.extractHeapify(smallest)
 
     def extractMin(self):
+        # Extract the minimum value (in root)
         if self.isEmpty():
             return
         root = self.Heap[0]
+        # Substitite the root with last element
         self.Heap[0] = self.Heap[self.Size - 1]
         self.Heap.pop()
         self.Size -= 1
+        # Update heap
         self.extractHeapify(0)
         return root
 
     def insertHeapify(self, idx):
+        # update heap after insert
         parent = int(((idx - 1) / 2))
+        # check if the inserted element is smaller than its parent
         if self.Heap[idx].Value < self.Heap[parent].Value:
             self.Heap[idx], self.Heap[parent] = self.Heap[parent], self.Heap[idx]
             self.insertHeapify(parent)
 
     def insert(self, v):
+        # insert node at the end of heap
         self.Size += 1
         self.Heap.append(v)
         self.insertHeapify(self.Size - 1)
         return
 
     def updateKey(self, v):
+        # update the vertex value in heap
         self.Heap.remove(v)
         self.Size -= 1
         self.insert(v)
@@ -115,7 +126,6 @@ class minHeap:
         print("HEAP: ")
         for i in self.Heap:
             print("Name: ", i.Name, ", Value: ", i.Value)
-
 
 def prim(G):
     # CHOOSE A STARTING POINT AT RANDOM
@@ -149,7 +159,7 @@ def prim(G):
     return A_weight
 
 
-if __name__ == '__main__':
+if name == 'main':
 
     f = open('mst_dataset/input_random_13_80.txt', 'r')
 
